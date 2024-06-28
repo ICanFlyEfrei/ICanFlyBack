@@ -1,9 +1,10 @@
 import { registerAs } from '@nestjs/config';
-import Joi from 'joi';
-
+const Joi = require('joi');
 const schema = Joi.object({
   secret: Joi.string().base64().required(),
 });
+
+
 
 export const AuthConfig = registerAs(
   'auth',

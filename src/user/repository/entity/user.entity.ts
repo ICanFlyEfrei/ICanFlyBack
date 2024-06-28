@@ -3,7 +3,10 @@ import { UserRoles } from '../../../shared/api-enums';
 
 @Entity()
 export class UserEntity{
-    @PrimaryColumn({length: 100})
+    @PrimaryColumn()
+    id: string;
+
+    @Column()
     email: string;
 
     @Column()

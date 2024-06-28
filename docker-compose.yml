@@ -1,13 +1,13 @@
 version: "3"
 
 services:
-  i-can-fly-server:
+  icanfly-server:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: i_can_fly_server
+    container_name: icanfly_server
     ports:
-      - "6000:3000"
+      - "7000:3000"
     restart: always
     env_file:
       - ./.env

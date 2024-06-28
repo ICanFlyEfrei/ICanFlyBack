@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../../user/service/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from '../../user/repository/entity/user.entity';
 import { JwtUser } from '../interfaces/jwt-user.interface';
 import { ErrorEnum, ErrorMessageEnum } from '../../shared/error.enum';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,8 @@ export class AuthService {
   @Inject() private readonly jwtService: JwtService;
   @InjectRepository(RefreshTokenEntity)
   refreshTokenRepository: Repository<RefreshTokenEntity>;
+
+  private readonly logger = new Logger(AuthService.name);
 
   async getToken(user: UserEntity) {
     let refreshToken = new RefreshTokenEntity();
@@ -31,9 +34,10 @@ export class AuthService {
 
   async login(username: string, pass: string) {
     const user = await this.userService.findOne(username);
-    if (user?.password !== pass) {
+    if (!await bcrypt.compare(pass, user.password)) {
       throw new UnauthorizedException();
     }
+    this.logger.log(`User ${username} logged in`);
     return this.getToken(user);
   }
 
@@ -66,6 +70,9 @@ export class AuthService {
       });
     }
     await this.refreshTokenRepository.delete(refreshTokenEntity);
+
+    this.logger.log(`User ${refreshTokenEntity.user.email} logged out`);
+
     return {
       message: 'Successfully logged out',
     };
