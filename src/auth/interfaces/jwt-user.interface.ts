@@ -1,6 +1,6 @@
-import { UserRoles } from '../../shared/api-enums';
+import { UserTypes } from '../../shared/api-enums';
 
 export interface JwtUser {
   userId: string;
-  role: UserRoles;
+  role: UserTypes;
 }

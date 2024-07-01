@@ -1,9 +1,11 @@
-export enum UserRoles {
+export enum UserTypes {
   admin = 'admin',
-  member = 'member'
+  employee = 'employee',
+  client = 'client'
 }
 
 export enum RoleWeight {
   admin,
-  member,
+  employee,
+  client,
 }
