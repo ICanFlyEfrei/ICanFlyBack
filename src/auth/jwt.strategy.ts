@@ -27,11 +27,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: JwtUser): Promise<JwtUser> {
     const user = await this.userRepository.findOne({
       where: {
-        email: payload.userId,
+        id: payload.userId,
       }
     });
 
-    if (!user || payload.userId !== user.email) {
+    if (!user || payload.userId !== user.id) {
       throw new UnauthorizedException({
         code: ErrorEnum.invalid_token,
         message: ErrorMessageEnum.invalid_token,
@@ -39,8 +39,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     return {
-      userId: user.email,
-      role: user.role
+      userId: user.id,
+      role: user.type
     };
   }
 }

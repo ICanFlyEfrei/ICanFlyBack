@@ -3,7 +3,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../service/user.service';
 import { UserEntity } from '../repository/entity/user.entity';
 import { RoleGuard } from '../../auth/guards/role.guard';
-import { UserRoles } from '../../shared/api-enums';
+import { UserTypes } from '../../shared/api-enums';
+import { JwtOauthGuard } from '../../auth/guards/jwt-oauth.guard';
+import { CreateClientDto } from './dto/create-client.dto';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+
 
 @ApiTags('user')
 @Controller('user')
@@ -11,31 +15,49 @@ export class UserController {
     constructor(private readonly userService: UserService) {
     }
 
-    @Post()
-    @UseGuards(RoleGuard(UserRoles.admin))
-    async create(@Body() user: UserEntity) {
-        return this.userService.create(user);
+    @Post('client')
+    async createClient(@Body() client: CreateClientDto) {
+        return this.userService.createClient(client);
+    }
+
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    @Post('employee')
+    async createEmployee(@Body() employee: CreateEmployeeDto) {
+        return this.userService.createEmployee(employee);
+    }
+
+    @Get('client/all')
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    async findAllClients() {
+        return this.userService.findAllClients();
+    }
+
+    @Get('employee/:companyName')
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    async findAllEmployees(@Param('companyName') companyName: string) {
+        return this.userService.findAllEmployeesOfCompany(companyName);
     }
 
     @Post('update')
-    @UseGuards(RoleGuard(UserRoles.admin))
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
     async update(@Body() user: UserEntity) {
         return this.userService.update(user);
     }
 
     @Post('delete')
-    @UseGuards(RoleGuard(UserRoles.admin))
-    async delete(@Body() email: string) {
-        return this.userService.delete(email);
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    async delete(@Body() id: string) {
+        return this.userService.delete(id);
     }
 
-    @Get(':email')
-    async findOne(@Param('email') email: string) {
-        return this.userService.findOne(email);
+    @Get('find/:id')
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    async findOne(@Param('id') id: string) {
+        return this.userService.findOne(id);
     }
 
     @Get('all')
-    @UseGuards(RoleGuard(UserRoles.admin))
+    @UseGuards(RoleGuard(UserTypes.admin))
     async findAll() {
         return this.userService.findAll();
     }

@@ -5,10 +5,10 @@ import {
   InternalServerErrorException,
   mixin,
 } from '@nestjs/common';
-import { RoleWeight, UserRoles } from '../../shared/api-enums';
+import { RoleWeight, UserTypes } from '../../shared/api-enums';
 import { ErrorEnum, ErrorMessageEnum } from '../../shared/error.enum';
 
-export const RoleGuard = (role: UserRoles) => {
+export const RoleGuard = (role: UserTypes) => {
   class RoleGuardMixin implements CanActivate {
     canActivate(context: ExecutionContext) {
       const request = context.switchToHttp().getRequest();

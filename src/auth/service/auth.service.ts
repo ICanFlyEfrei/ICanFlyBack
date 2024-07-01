@@ -24,20 +24,20 @@ export class AuthService {
     refreshToken = await this.refreshTokenRepository.save(refreshToken);
     return {
       access_token: this.jwtService.sign(<JwtUser>{
-        role: user.role,
-        userId: user.email,
+        role: user.type,
+        userId: user.id,
       }),
       refresh_token: Buffer.from(refreshToken.id).toString('base64'),
       token_type: 'Bearer',
     };
   }
 
-  async login(username: string, pass: string) {
-    const user = await this.userService.findOne(username);
+  async login(email: string, pass: string) {
+    const user = await this.userService.findByEmail(email);
     if (!await bcrypt.compare(pass, user.password)) {
       throw new UnauthorizedException();
     }
-    this.logger.log(`User ${username} logged in`);
+    this.logger.log(`User ${email} logged in`);
     return this.getToken(user);
   }
 

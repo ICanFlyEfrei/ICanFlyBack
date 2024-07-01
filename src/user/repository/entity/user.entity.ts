@@ -1,9 +1,10 @@
-import {Column, Entity, PrimaryColumn} from "typeorm";
-import { UserRoles } from '../../../shared/api-enums';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { UserTypes } from '../../../shared/api-enums';
+
 
 @Entity()
 export class UserEntity{
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
@@ -12,7 +13,19 @@ export class UserEntity{
     @Column()
     password: string;
 
-    @Column({enum: UserRoles, default: UserRoles.member})
-    role: UserRoles;
+    @Column()
+    firstName: string;
+
+    @Column()
+    lastName: string;
+
+    @Column()
+    phoneNumber: string;
+
+    @Column()
+    company: string;
+
+    @Column({enum: UserTypes, default: UserTypes.client})
+    type: UserTypes;
 
 }
