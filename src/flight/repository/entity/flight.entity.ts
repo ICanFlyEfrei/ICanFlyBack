@@ -1,4 +1,4 @@
-import { flightStatus } from "src/shared/api-enums";
+import { FlightStatus } from "src/shared/api-enums";
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity()
@@ -10,7 +10,10 @@ export class FlightEntity{
     flightNumber:string;
 
     @Column()
-    weekday:string;
+    departingDate:string;
+
+    @Column()
+    arrivalDate:string;
 
     @Column()
     startingAirport:string;
@@ -24,7 +27,7 @@ export class FlightEntity{
     @Column()
     segmentEquipmentDescription:string;
 
-    @Column({enum: flightStatus, default: flightStatus.Scheduled})
-    status: flightStatus;
+    @Column({enum: FlightStatus, default: FlightStatus.Scheduled})
+    status: FlightStatus;
 
 }

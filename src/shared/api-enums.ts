@@ -10,7 +10,7 @@ export enum RoleWeight {
   client,
 }
 
-export enum flightStatus {
+export enum FlightStatus {
   Scheduled = 'Scheduled',
   Completed = 'Completed',
 }
