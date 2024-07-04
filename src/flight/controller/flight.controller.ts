@@ -1,9 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FlightService } from '../service/flight.service';
 import { FlightEntity } from '../repository/entity/flight.entity';
 import { RoleGuard } from '../../auth/guards/role.guard';
 import { UserTypes, FlightStatus } from '../../shared/api-enums';
+import { JwtOauthGuard } from '../../auth/guards/jwt-oauth.guard';
+import { CreateFlightDto } from './dto/create-flight.dto';
+import { SearchFlightDTO } from './dto/search-flight-dto';
 
 @ApiTags('flight')
 @Controller('flight')
@@ -12,19 +15,19 @@ export class FlightController{
     }
 
     @Post('createFlight')
-    @UseGuards(RoleGuard(UserTypes.admin))
-    async createFlight(@Body() flight: FlightEntity) {
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
+    async createFlight(@Body() flight: CreateFlightDto) {
         return this.flightService.createFlight(flight);
     }
 
     @Post('update')
-    @UseGuards(RoleGuard(UserTypes.admin))
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
     async updtade(@Body() flight : FlightEntity){
         return this.flightService.update(flight);
     }
 
     @Post('delete')
-    @UseGuards(RoleGuard(UserTypes.admin))
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
     async delete(@Body() id: string){
         return this.flightService.delete(id);
     }
@@ -64,12 +67,15 @@ export class FlightController{
         return this.flightService.findFlightsArrivalDate(arrivalDate);
     }
 
-
-
     @Get('all')
-    @UseGuards(RoleGuard(UserTypes.admin))
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
     async findAll(){
         return this.flightService.findAllFlights();
+    }
+
+    @Get()
+    async findFlightWithParams(@Query() flight: SearchFlightDTO){
+        return this.flightService.findFlightWithParams(flight);
     }
 
 }

@@ -6,12 +6,14 @@ import {ConfigModule} from "@nestjs/config";
 import {UserModule} from "./user/user.module";
 import { AuthModule } from './auth/auth.module';
 import { PriceModelApiModule } from './price-model-api/price-model-api.module';
+import { FlightModule } from './flight/flight.module';
 
 @Module({
     imports: [DatabaseModule,
         ConfigModule.forRoot(),
         UserModule,
         AuthModule,
+        FlightModule,
         PriceModelApiModule],
     controllers: [AppController],
     providers: [AppService],

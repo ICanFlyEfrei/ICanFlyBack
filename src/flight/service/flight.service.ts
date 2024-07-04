@@ -3,6 +3,8 @@ import { FlightEntity } from '../repository/entity/flight.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FlightStatus } from '../../shared/api-enums';
+import { CreateFlightDto } from '../controller/dto/create-flight.dto';
+import { SearchFlightDTO } from '../controller/dto/search-flight-dto';
 class FlightNotFoundException implements Error {
   constructor(id: string) {
     this.message = `Flight with id ${id} not found`;
@@ -80,8 +82,8 @@ export class FlightService{
 
     private readonly logger = new Logger(FlightService.name);
 
-    async createFlight(flight: FlightEntity) {
-        await this.flightRepository.save(flight);
+    async createFlight(createFlightDto: CreateFlightDto) {
+        const flight = await this.flightRepository.save(this.flightTotoEntity(createFlightDto));
         this.logger.log(`Creating flight with id ${flight.id}`);
         return flight.id;
     }
@@ -177,15 +179,23 @@ export class FlightService{
 
 
     async findAllFlights(): Promise<FlightEntity[]> {
-        if(!await this.flightRepository.find){
+        if(!this.flightRepository.find){
             this.logger.error(`Error listing all flights`)
             throw new FlightFindAllException()
         }
         return this.flightRepository.find();
     }
 
+    async findFlightWithParams(params: SearchFlightDTO ): Promise<FlightEntity[]> {
+        try {
+            return await this.flightRepository.find({where: params});
+        } catch (e) {
+            this.logger.error(`Error finding flight with params ${JSON.stringify(params)}`);
+            throw e;
+        }
+    }
 
-    fligthDTOtoEntity(flightDTO: any): FlightEntity {
+    flightTotoEntity(flightDTO: any): FlightEntity {
         const flight = new FlightEntity();
         flight.flightNumber = flightDTO.flightNumber;
         flight.departingDate = flightDTO.departingDate;

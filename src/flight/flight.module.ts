@@ -10,4 +10,4 @@ import {FlightEntity} from "./repository/entity/flight.entity";
     providers: [FlightService],
     exports: [FlightService]
 })
-export class UserModule {}
+export class FlightModule {}
