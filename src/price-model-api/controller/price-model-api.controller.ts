@@ -5,7 +5,7 @@ import { PriceModelInputDto } from '../dto/price-model-input.dto';
 @Controller('price-model-api')
 export class PriceModelApiController {
   constructor(
-    private readonly priceModelApiService: PriceModelApiService,
+    private priceModelApiService: PriceModelApiService,
   ) {}
 
   @Post('predict')
