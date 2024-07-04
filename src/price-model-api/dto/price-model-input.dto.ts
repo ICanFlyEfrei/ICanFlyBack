@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class PriceModelInputDto {
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  weekday: string;
+  weekday: number;
 
   @IsString()
   @IsNotEmpty()
@@ -15,9 +15,9 @@ export class PriceModelInputDto {
 
   @IsString()
   @IsNotEmpty()
-  segmentAirline: string;
+  segmentsAirlineName: string;
 
   @IsString()
   @IsNotEmpty()
-  segmentEquipment: string;
+  segmentsEquipmentDescription: string;
 }

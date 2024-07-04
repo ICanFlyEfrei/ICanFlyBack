@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { PriceModelApiService } from '../service/price-model-api.service';
 import { PriceModelInputDto } from '../dto/price-model-input.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -10,8 +10,8 @@ export class PriceModelApiController {
     private priceModelApiService: PriceModelApiService,
   ) {}
 
-  @Post('predict')
-  async getPricePrediction(@Body() priceModelInput: PriceModelInputDto) {
+  @Get('predict')
+  async getPricePrediction(@Query() priceModelInput: PriceModelInputDto) {
     return this.priceModelApiService.getPricePrediction(priceModelInput);
   }
 
