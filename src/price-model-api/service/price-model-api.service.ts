@@ -14,7 +14,7 @@ export class PriceModelApiService {
       return await this.priceModelApiRepository.getPricePrediction(priceModelInput);
     } catch (error) {
       this.logger.error(`Error getting price prediction: ${error.message}`);
-      throw error; // Rethrow error for proper handling by NestJS exception filters
+      throw error;
     }
   }
 }
