@@ -26,7 +26,10 @@ export class FlightEntity{
 
     @Column()
     segmentEquipmentDescription:string;
-
+    
+    @Column()
+    numberOfSeats: string;
+    
     @Column({enum: FlightStatus, default: FlightStatus.Scheduled})
     status: FlightStatus;
 

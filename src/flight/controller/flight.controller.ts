@@ -21,14 +21,14 @@ export class FlightController{
     }
 
     @Post('update')
-    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
-    async update(@Body() flight : FlightEntity){
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    async updade(@Body() flight : FlightEntity){
         return this.flightService.update(flight);
     }
 
-    @Delete('delete/:id')
+    @Delete(':id')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
-    async delete(@Param("id") id: string){
+    async delete(@Param('id') id: string){
         return this.flightService.delete(id);
     }
 
