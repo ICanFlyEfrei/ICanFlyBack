@@ -5,6 +5,8 @@ import { FlightEntity } from '../repository/entity/flight.entity';
 import { RoleGuard } from '../../auth/guards/role.guard';
 import { UserTypes, FlightStatus } from '../../shared/api-enums';
 import { JwtOauthGuard } from '../../auth/guards/jwt-oauth.guard';
+import { CreateFlightDto } from './dto/create-flight.dto';
+import { SearchFlightDTO } from './dto/search-flight-dto';
 
 @ApiTags('flight')
 @Controller('flight')
@@ -13,8 +15,8 @@ export class FlightController{
     }
 
     @Post('createFlight')
-    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
-    async createFlight(@Body() flight: FlightEntity) {
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
+    async createFlight(@Body() flight: CreateFlightDto) {
         return this.flightService.createFlight(flight);
     }
 
@@ -60,17 +62,15 @@ export class FlightController{
         return this.flightService.findFlightsDepartingDate(departingDate);
     }
 
-    @Get('findFlightsArrivalDate/:arrivalDate')
-    async findFlightsArrivalDate(@Param('arrivalDate') arrivalDate: string){
-        return this.flightService.findFlightsArrivalDate(arrivalDate);
-    }
-
-
-
     @Get('all')
-    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
     async findAll(){
         return this.flightService.findAllFlights();
+    }
+
+    @Get()
+    async findFlightWithParams(@Query() flight: SearchFlightDTO){
+        return this.flightService.findFlightWithParams(flight);
     }
 
 }

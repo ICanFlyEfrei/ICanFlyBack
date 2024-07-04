@@ -3,6 +3,8 @@ import { FlightEntity } from '../repository/entity/flight.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FlightStatus } from '../../shared/api-enums';
+import { CreateFlightDto } from '../controller/dto/create-flight.dto';
+import { SearchFlightDTO } from '../controller/dto/search-flight-dto';
 class FlightNotFoundException implements Error {
   constructor(id: string) {
     this.message = `Flight with id ${id} not found`;
@@ -19,6 +21,7 @@ class FlightSearchCompanyException implements Error {
     message: string;
     name: string;
   }
+
 class FlightSearchStatusException implements Error {
     constructor(status: string) {
       this.message = `No flights with ${status} status found`;
@@ -51,14 +54,7 @@ class FlightSearchDepartingDateException implements Error {
     message: string;
     name: string;
   }
-class FlightSearchArrivalDateException implements Error {
-    constructor(date: string) {
-      this.message = `No flight available with this date: ${date}`;
-      this.name = 'FlightSearchArrivalDateException';
-    }
-    message: string;
-    name: string;
-  }
+
 class FlightFindAllException implements Error {
     constructor() {
       this.message = `Flight search failed`;
@@ -80,8 +76,8 @@ export class FlightService{
 
     private readonly logger = new Logger(FlightService.name);
 
-    async createFlight(flight: FlightEntity) {
-        await this.flightRepository.save(flight);
+    async createFlight(createFlightDto: CreateFlightDto) {
+        const flight = await this.flightRepository.save(this.flightTotoEntity(createFlightDto));
         this.logger.log(`Creating flight with id ${flight.id}`);
         return flight.id;
     }
@@ -165,27 +161,24 @@ export class FlightService{
         return this.flightRepository.find({where: {departingDate: departingDate}})
     }
 
-
-    async findFlightsArrivalDate(arrivalDate: string): Promise<FlightEntity[]> {
-        if(!await this.flightRepository.findOne({where: {arrivalDate: arrivalDate}})){
-            this.logger.error(`Flight with arrival date ${arrivalDate} not found`)
-            throw new FlightSearchArrivalDateException(arrivalDate)
-        }
-        this.logger.log(`Finding flights with arrival date ${arrivalDate}`);
-        return this.flightRepository.find({where: {arrivalDate: arrivalDate}})
-    }
-
-
     async findAllFlights(): Promise<FlightEntity[]> {
-        if(!await this.flightRepository.find){
+        if(!this.flightRepository.find){
             this.logger.error(`Error listing all flights`)
             throw new FlightFindAllException()
         }
         return this.flightRepository.find();
     }
 
+    async findFlightWithParams(params: SearchFlightDTO ): Promise<FlightEntity[]> {
+        try {
+            return await this.flightRepository.find({where: params});
+        } catch (e) {
+            this.logger.error(`Error finding flight with params ${JSON.stringify(params)}`);
+            throw e;
+        }
+    }
 
-    fligthDTOtoEntity(flightDTO: any): FlightEntity {
+    flightTotoEntity(flightDTO: any): FlightEntity {
         const flight = new FlightEntity();
         flight.flightNumber = flightDTO.flightNumber;
         flight.departingDate = flightDTO.departingDate;

@@ -5,3 +5,4 @@
 .env
 dist
 /dist/
+/package-lock.json
