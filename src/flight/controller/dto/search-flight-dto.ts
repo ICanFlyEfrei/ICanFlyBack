@@ -10,7 +10,4 @@ export class SearchFlightDTO {
   @IsString()
   @IsNotEmpty()
   departureDate: string;
-  @IsString()
-  @IsNotEmpty()
-  arrivalDate: string;
 }

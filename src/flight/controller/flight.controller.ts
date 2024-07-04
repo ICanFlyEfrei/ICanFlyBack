@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FlightService } from '../service/flight.service';
 import { FlightEntity } from '../repository/entity/flight.entity';
@@ -22,13 +22,13 @@ export class FlightController{
 
     @Post('update')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
-    async updtade(@Body() flight : FlightEntity){
+    async update(@Body() flight : FlightEntity){
         return this.flightService.update(flight);
     }
 
-    @Post('delete')
+    @Delete('delete/:id')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
-    async delete(@Body() id: string){
+    async delete(@Param("id") id: string){
         return this.flightService.delete(id);
     }
 
@@ -60,11 +60,6 @@ export class FlightController{
     @Get('findFlightsDepartingDate/:departingDate')
     async findFlightsDepartingDate(@Param('departingDate') departingDate: string){
         return this.flightService.findFlightsDepartingDate(departingDate);
-    }
-
-    @Get('findFlightsArrivalDate/:arrivalDate')
-    async findFlightsArrivalDate(@Param('arrivalDate') arrivalDate: string){
-        return this.flightService.findFlightsArrivalDate(arrivalDate);
     }
 
     @Get('all')

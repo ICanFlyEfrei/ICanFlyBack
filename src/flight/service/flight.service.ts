@@ -21,6 +21,7 @@ class FlightSearchCompanyException implements Error {
     message: string;
     name: string;
   }
+
 class FlightSearchStatusException implements Error {
     constructor(status: string) {
       this.message = `No flights with ${status} status found`;
@@ -53,14 +54,7 @@ class FlightSearchDepartingDateException implements Error {
     message: string;
     name: string;
   }
-class FlightSearchArrivalDateException implements Error {
-    constructor(date: string) {
-      this.message = `No flight available with this date: ${date}`;
-      this.name = 'FlightSearchArrivalDateException';
-    }
-    message: string;
-    name: string;
-  }
+
 class FlightFindAllException implements Error {
     constructor() {
       this.message = `Flight search failed`;
@@ -166,17 +160,6 @@ export class FlightService{
         this.logger.log(`Finding flights with departing date ${departingDate}`);
         return this.flightRepository.find({where: {departingDate: departingDate}})
     }
-
-
-    async findFlightsArrivalDate(arrivalDate: string): Promise<FlightEntity[]> {
-        if(!await this.flightRepository.findOne({where: {arrivalDate: arrivalDate}})){
-            this.logger.error(`Flight with arrival date ${arrivalDate} not found`)
-            throw new FlightSearchArrivalDateException(arrivalDate)
-        }
-        this.logger.log(`Finding flights with arrival date ${arrivalDate}`);
-        return this.flightRepository.find({where: {arrivalDate: arrivalDate}})
-    }
-
 
     async findAllFlights(): Promise<FlightEntity[]> {
         if(!this.flightRepository.find){
