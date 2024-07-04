@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FlightService } from '../service/flight.service';
 import { FlightEntity } from '../repository/entity/flight.entity';
 import { RoleGuard } from '../../auth/guards/role.guard';
 import { UserTypes, FlightStatus } from '../../shared/api-enums';
+import { JwtOauthGuard } from '../../auth/guards/jwt-oauth.guard';
 
 @ApiTags('flight')
 @Controller('flight')
@@ -12,20 +13,20 @@ export class FlightController{
     }
 
     @Post('createFlight')
-    @UseGuards(RoleGuard(UserTypes.admin))
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
     async createFlight(@Body() flight: FlightEntity) {
         return this.flightService.createFlight(flight);
     }
 
     @Post('update')
-    @UseGuards(RoleGuard(UserTypes.admin))
-    async updtade(@Body() flight : FlightEntity){
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    async updade(@Body() flight : FlightEntity){
         return this.flightService.update(flight);
     }
 
-    @Post('delete')
-    @UseGuards(RoleGuard(UserTypes.admin))
-    async delete(@Body() id: string){
+    @Delete(':id')
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
+    async delete(@Param('id') id: string){
         return this.flightService.delete(id);
     }
 
@@ -67,7 +68,7 @@ export class FlightController{
 
 
     @Get('all')
-    @UseGuards(RoleGuard(UserTypes.admin))
+    @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
     async findAll(){
         return this.flightService.findAllFlights();
     }

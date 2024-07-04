@@ -9,6 +9,9 @@ export class FlightController {
     weekday: string;
 
     @IsString()
+    numberOfSeats: string;
+
+    @IsString()
     startingAirport: string;
 
     @IsString()
