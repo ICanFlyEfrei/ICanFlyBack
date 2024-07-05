@@ -1,5 +1,5 @@
 import { ReservationStatus } from 'src/shared/api-enums';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from '../../../user/repository/entity/user.entity';
 import { FlightEntity } from '../../../flight/repository/entity/flight.entity';
 
@@ -8,12 +8,10 @@ export class ReservationEntity{
     @PrimaryGeneratedColumn('uuid')
     id:string;
 
-    @Column()
-    @ManyToOne(type => FlightEntity)
+    @OneToMany(() => FlightEntity, flight => flight.id)
     flight: FlightEntity
 
-    @Column()
-    @ManyToOne(type => UserEntity)
+    @OneToMany(() => UserEntity, user => user.id)
     client: UserEntity;
 
     @Column()

@@ -7,7 +7,7 @@ import {UserModule} from "./user/user.module";
 import { AuthModule } from './auth/auth.module';
 import {FlightModule} from "./flight/flight.module";
 import { PriceModelApiModule } from './price-model-api/price-model-api.module';
-import { FlightModule } from './flight/flight.module';
+import { ReservationModule } from './reservation/reservation.module';
 
 @Module({
     imports: [DatabaseModule,
@@ -15,7 +15,9 @@ import { FlightModule } from './flight/flight.module';
         UserModule,
         AuthModule,
         FlightModule,
-        PriceModelApiModule],
+        ReservationModule,
+        PriceModelApiModule,
+        ],
     controllers: [AppController],
     providers: [AppService],
 })

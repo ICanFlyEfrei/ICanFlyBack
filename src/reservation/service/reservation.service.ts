@@ -1,8 +1,9 @@
-import {Injectable, Logger} from "@nestjs/common";
-import { ReservationEntity } from '../repository/entity/reservation.entity';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ReservationEntity } from '../repository/entity/reservation.entity';
 import { Repository } from 'typeorm';
 import { CreateReservationDto } from '../controller/dto/create-reservation.dto';
+import { FlightService } from '../../flight/service/flight.service';
 
 class ReservationException implements Error {
     constructor(message: string, name: string) {
@@ -17,38 +18,48 @@ class ReservationException implements Error {
 export class ReservationService {
     constructor(
         @InjectRepository(ReservationEntity)
-        private ReservationRepository: Repository<ReservationEntity>,
+        private reservationRepository: Repository<ReservationEntity>,
+        private flightService: FlightService,
     ) {}
 
     private readonly logger = new Logger(ReservationService.name);
 
     async createReservation(createReservationDto: CreateReservationDto) {
-        const Reservation = await this.ReservationRepository.save(this.ReservationTotoEntity(createReservationDto));
+        const flight = await this.flightService.findOne(createReservationDto.flight.id);
+        if (flight.numberOfSeats < 1) {
+            this.logger.error(`No seats available on flight with id ${flight.id}`);
+            throw new ReservationException(`No seats available on flight with id ${flight.id}`, 'NoSeatsAvailableException');
+        }
+
+        flight.numberOfSeats -= 1;
+        await this.flightService.update(flight);
+
+        const Reservation = await this.reservationRepository.save(this.ReservationTotoEntity(createReservationDto));
         this.logger.log(`Creating Reservation with id ${Reservation.id}`);
         return Reservation.id;
     }
 
     async update(Reservation: ReservationEntity): Promise<ReservationEntity> {
-        if (!await this.ReservationRepository.findOne({where: {id: Reservation.id}})){
+        if (!await this.reservationRepository.findOne({where: {id: Reservation.id}})){
             this.logger.error(`Reservation with id ${Reservation.id} not found`)
             throw new ReservationException(`Reservation with id ${Reservation.id} not found`, 'ReservationNotFoundException')
         }
         this.logger.log(`Updating Reservation with id ${Reservation.id}`);
-        return this.ReservationRepository.save(Reservation)
+        return this.reservationRepository.save(Reservation)
     }
 
 
     async delete(id: string): Promise<void> {
-        if(!await this.ReservationRepository.findOne({where: {id}})){
+        if(!await this.reservationRepository.findOne({where: {id}})){
             this.logger.error(`Reservation with id ${id} is not found`)
             throw new ReservationException(`Reservation with id ${id} is not found`, 'ReservationNotFoundException')
         }
         this.logger.log(`Deleting Reservation with id ${id}`);
-        await this.ReservationRepository.delete({id})
+        await this.reservationRepository.delete({id})
     }
 
     async findOne(id: string): Promise<ReservationEntity> {
-        const entity = await this.ReservationRepository.findOne({where:{id}});
+        const entity = await this.reservationRepository.findOne({where:{id}});
         if (!entity) {
             this.logger.error(`Reservation with id ${id} not found`);
             throw new ReservationException(`Reservation with id ${id} not found`, 'ReservationNotFoundException')
@@ -57,12 +68,12 @@ export class ReservationService {
     }
 
     async findAllReservationsByClient(userId: string): Promise<ReservationEntity[]> {
-        const client = await this.ReservationRepository.findOne({where: {id: userId}});
+        const client = await this.reservationRepository.findOne({where: {id: userId}});
         if (!client) {
             this.logger.error(`User with id ${userId} not found`);
             throw new ReservationException(`User with id ${userId} not found`, 'ReservationNotFoundException')
         }
-        const Reservations = await this.ReservationRepository.find({where: {client: client}});
+        const Reservations = await this.reservationRepository.find({where: {client: client}});
         if (!Reservations) {
             this.logger.error(`Reservations for user with id ${userId} not found`);
             throw new ReservationException(`Reservations for user with id ${userId} not found`, 'ReservationNotFoundException')
@@ -71,22 +82,22 @@ export class ReservationService {
     }
 
     async findAllReservations(): Promise<ReservationEntity[]> {
-        if(!this.ReservationRepository.find){
+        if(!this.reservationRepository.find){
             this.logger.error(`Error listing all Reservations`)
             throw new ReservationException(`Error listing all Reservations`, 'ReservationNotFoundException')
         }
-        return this.ReservationRepository.find();
+        return this.reservationRepository.find();
     }
 
-    ReservationTotoEntity(ReservationDTO: any): ReservationEntity {
-        const Reservation = new ReservationEntity();
-        Reservation.flight = ReservationDTO.flight;
-        Reservation.client = ReservationDTO.client;
-        Reservation.ReservationDate = ReservationDTO.ReservationDate;
-        Reservation.seat = ReservationDTO.seat;
-        Reservation.status = ReservationDTO.status;
-        Reservation.payment = ReservationDTO.payment;
-        Reservation.price = ReservationDTO.price;
-        return Reservation;
+    ReservationTotoEntity(reservationDTO: any): ReservationEntity {
+        const reservation = new ReservationEntity();
+        reservation.flight = reservationDTO.flight;
+        reservation.client = reservationDTO.client;
+        reservation.ReservationDate = reservationDTO.ReservationDate;
+        reservation.seat = reservationDTO.seat;
+        reservation.status = reservationDTO.status;
+        reservation.payment = reservationDTO.payment;
+        reservation.price = reservationDTO.price;
+        return reservation;
     }
 }
