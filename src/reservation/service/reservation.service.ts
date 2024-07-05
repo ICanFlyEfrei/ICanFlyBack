@@ -48,7 +48,6 @@ export class ReservationService {
         return this.reservationRepository.save(Reservation)
     }
 
-
     async delete(id: string): Promise<void> {
         if(!await this.reservationRepository.findOne({where: {id}})){
             this.logger.error(`Reservation with id ${id} is not found`)
