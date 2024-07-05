@@ -43,7 +43,7 @@ export class ReservationController{
         return this.reservationService.findAllReservations();
     }
 
-    @Get('all/:id')
+    @Get('user/:id')
     @UseGuards(JwtOauthGuard)
     async findAllReservationsByClient(@Param('id') id: string){
         return this.reservationService.findAllReservationsByClient(id);
