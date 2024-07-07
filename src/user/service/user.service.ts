@@ -38,7 +38,7 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<UserEntity> {
-    const entity = await this.userRepository.findOne({where: {email}});
+    const entity = await this.userRepository.findOne({where: {email},select: ['id', 'email', 'firstName', 'lastName', 'phoneNumber', 'company', 'type']});
     if (!entity) {
       this.logger.error(`User with email: ${email} not found`);
       throw new UserNotFoundException(email);
@@ -86,17 +86,17 @@ export class UserService {
 
   async findAll(): Promise<UserEntity[]> {
     this.logger.log('Finding all users');
-    return this.userRepository.find();
+    return this.userRepository.find({select: ['id', 'email', 'firstName', 'lastName', 'phoneNumber', 'company', 'type']});
   }
 
   async findAllEmployeesOfCompany(company: string): Promise<UserEntity[]> {
     this.logger.log(`Finding all employees of company: ${company}`);
-    return this.userRepository.find({where: {company}});
+    return this.userRepository.find({where: {company}, select: ['id', 'email', 'firstName', 'lastName', 'phoneNumber', 'company', 'type']});
   }
 
   async findAllClients(): Promise<UserEntity[]> {
     this.logger.log(`Finding all clients`);
-    return this.userRepository.find({where: {type: UserTypes.client}});
+    return this.userRepository.find({where: {type: UserTypes.client}, select: ['id', 'email', 'firstName', 'lastName', 'phoneNumber', 'company', 'type']});
   }
 
   clientDtoToEntity(client: CreateClientDto): UserEntity {
