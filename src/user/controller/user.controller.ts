@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../service/user.service';
 import { UserEntity } from '../repository/entity/user.entity';
@@ -38,13 +38,13 @@ export class UserController {
         return this.userService.findAllEmployeesOfCompany(companyName);
     }
 
-    @Post('update')
+    @Patch('update')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
     async update(@Body() user: UserEntity) {
         return this.userService.update(user);
     }
 
-    @Post('delete')
+    @Delete('delete')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
     async delete(@Body() id: string) {
         return this.userService.delete(id);
