@@ -1,13 +1,14 @@
 import { IsNotEmpty, IsString } from 'class-validator';
+import { Airports } from '../../../shared/api-enums';
 
 export class SearchFlightDTO {
   @IsString()
   @IsNotEmpty()
-  startingAirport: string;
+  startingAirport: Airports;
   @IsString()
   @IsNotEmpty()
-  destinationAirport: string;
+  destinationAirport: Airports;
   @IsString()
   @IsNotEmpty()
-  departureDate: string;
+  departureDate: Date;
 }

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { PriceModelInputDto } from '../dto/price-model-input.dto';
 import { firstValueFrom } from 'rxjs';
+import { PriceModelPredictionDto } from '../dto/price-model-prediction.dto';
 
 
 @Injectable()
@@ -11,11 +11,10 @@ export class PriceModelApiRepository {
     private readonly httpService: HttpService,
   ) {}
 
-  async getPricePrediction(priceModelInput: PriceModelInputDto) {
-    this.logger.log(`Getting price prediction for ${JSON.stringify(priceModelInput)}`);
+  async getPricePrediction(predictionData: PriceModelPredictionDto) {
+    this.logger.log(`Getting price prediction for ${JSON.stringify(predictionData)}`);
     try {
-      // Construct the query string
-      const queryParams = new URLSearchParams(priceModelInput as any).toString();
+      const queryParams = new URLSearchParams(predictionData as any).toString();
       const url = `http://localhost:5000/predict?${queryParams}`;
 
       const response = await firstValueFrom(this.httpService.get(url));

@@ -1,34 +1,32 @@
-import { FlightStatus } from "src/shared/api-enums";
+import { AircraftTypes, AirlineCodes, Airports, FlightStatus, NumberOfSeats } from 'src/shared/api-enums';
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity()
 export class FlightEntity{
-    @PrimaryGeneratedColumn('uuid')
-    id:string;
 
-    @Column()
+    @PrimaryGeneratedColumn('uuid')
     flightNumber:string;
 
     @Column()
-    departingDate:string;
+    departureTime:Date;
 
     @Column()
-    arrivalDate:string;
+    arrivalTime:Date;
 
     @Column()
-    startingAirport:string;
+    startingAirport:Airports;
 
     @Column()
-    destinationAirport:string;
+    destinationAirport:Airports;
 
     @Column()
-    segmentAirlineName:string;
+    segmentAirlineName:AirlineCodes;
 
     @Column()
-    segmentEquipmentDescription:string;
+    segmentEquipmentDescription:AircraftTypes;
     
     @Column()
-    numberOfSeats: number;
+    numberOfSeats: NumberOfSeats;
     
     @Column({enum: FlightStatus, default: FlightStatus.Scheduled})
     status: FlightStatus;
