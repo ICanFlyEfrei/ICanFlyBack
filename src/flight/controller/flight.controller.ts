@@ -26,15 +26,15 @@ export class FlightController{
         return this.flightService.update(flight);
     }
 
-    @Delete(':id')
+    @Delete(':flightNumber')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
-    async delete(@Param('id') id: string){
-        return this.flightService.delete(id);
+    async delete(@Param('flightNumber') flightNumber: string){
+        return this.flightService.delete(flightNumber);
     }
 
-    @Get('findflight.flightNumber')
-    async findOne(@Param('id') id: string){
-        return this.flightService.findOne(id);
+    @Get(':flightNumber')
+    async findOne(@Param('flightNumber') flightNumber: string){
+        return this.flightService.findOne(flightNumber);
     }
 
     @Get('findCompanyFlights/:segmentAirlineName')
