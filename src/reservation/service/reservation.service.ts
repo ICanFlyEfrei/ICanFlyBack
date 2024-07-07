@@ -4,6 +4,7 @@ import { ReservationEntity } from '../repository/entity/reservation.entity';
 import { Repository } from 'typeorm';
 import { CreateReservationDto } from '../controller/dto/create-reservation.dto';
 import { FlightService } from '../../flight/service/flight.service';
+import { FlightStatus } from '../../shared/api-enums';
 
 class ReservationException implements Error {
     constructor(message: string, name: string) {
@@ -31,9 +32,6 @@ export class ReservationService {
             throw new ReservationException(`No seats available on flight with id ${flight.flightNumber}`, 'NoSeatsAvailableException');
         }
 
-        flight.numberOfSeats -= 1;
-        await this.flightService.update(flight);
-
         const Reservation = await this.reservationRepository.save(this.ReservationTotoEntity(createReservationDto));
         this.logger.log(`Creating Reservation with id ${Reservation.id}`);
         return Reservation.id;
@@ -57,6 +55,9 @@ export class ReservationService {
         }
 
         flight.numberOfSeats -= 1;
+        if (flight.numberOfSeats < 1) {
+            flight.status = FlightStatus.Completed;
+        }
         await this.flightService.update(flight);
 
         reservation.payment = true;
