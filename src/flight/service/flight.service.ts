@@ -1,10 +1,11 @@
-import {Injectable, Logger} from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 import { FlightEntity } from '../repository/entity/flight.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FlightStatus } from '../../shared/api-enums';
+import { AircraftTypes, AirlineCodes, Airports, FlightStatus, NumberOfSeats } from '../../shared/api-enums';
 import { CreateFlightDto } from '../controller/dto/create-flight.dto';
 import { SearchFlightDTO } from '../controller/dto/search-flight-dto';
+
 class FlightNotFoundException implements Error {
   constructor(id: string) {
     this.message = `Flight with id ${id} not found`;
@@ -78,41 +79,44 @@ export class FlightService{
 
     async createFlight(createFlightDto: CreateFlightDto) {
         const flight = await this.flightRepository.save(this.flightTotoEntity(createFlightDto));
-        this.logger.log(`Creating flight with id ${flight.id}`);
-        return flight.id;
+        this.logger.log(`Creating flight with id ${flight.flightNumber}`);
+        return {
+            flightNumber: flight.flightNumber,
+            status: flight.status
+        };
     }
 
 
     async update(flight: FlightEntity): Promise<FlightEntity> {
-        if (!await this.flightRepository.findOne({where: {id: flight.id}})){
-            this.logger.error(`Flight with id ${flight.id} not found`)
-            throw new FlightNotFoundException(flight.id.toString())
+        if (!await this.flightRepository.findOne({where: {flightNumber: flight.flightNumber}})){
+            this.logger.error(`Flight with id ${flight.flightNumber} not found`)
+            throw new FlightNotFoundException(flight.flightNumber.toString())
         }
-        this.logger.log(`Updating flight with id ${flight.id}`);
+        this.logger.log(`Updating flight with id ${flight.flightNumber}`);
         return this.flightRepository.save(flight)
     }
 
 
-    async delete(id: string): Promise<void> {
-        if(!await this.flightRepository.findOne({where: {id}})){
-            this.logger.error(`Flight with id ${id} is not found`)
-            throw new FlightNotFoundException(id.toString())
+    async delete(flightNumber: string): Promise<void> {
+        if(!await this.flightRepository.findOne({where: {flightNumber}})){
+            this.logger.error(`Flight with id ${flightNumber} is not found`)
+            throw new FlightNotFoundException(flightNumber.toString())
         }
-        this.logger.log(`Deleting flight with id ${id}`);
-        await this.flightRepository.delete({id})
+        this.logger.log(`Deleting flight with id ${flightNumber}`);
+        await this.flightRepository.delete({flightNumber})
     }
 
-    async findOne(id: string): Promise<FlightEntity> {
-        const entity = await this.flightRepository.findOne({where:{id}});
+    async findOne(flightNumber: string): Promise<FlightEntity> {
+        const entity = await this.flightRepository.findOne({where:{flightNumber}});
         if (!entity) {
-            this.logger.error(`Flight with id ${id} not found`);
-            throw new FlightNotFoundException(id.toString());
+            this.logger.error(`Flight with id ${flightNumber} not found`);
+            throw new FlightNotFoundException(flightNumber.toString());
         }
         return entity;
     }
         
 
-    async findCompanyFlights(segmentAirlineName: string): Promise<FlightEntity[]> {
+    async findCompanyFlights(segmentAirlineName: AirlineCodes): Promise<FlightEntity[]> {
         if(!await this.flightRepository.findOne({where: {segmentAirlineName: segmentAirlineName}})){
             this.logger.error(`Flight with company name ${segmentAirlineName} not found`)
             throw new FlightSearchCompanyException(segmentAirlineName)
@@ -132,7 +136,7 @@ export class FlightService{
     }
 
 
-    async findFlightsStartingAirport(startingAirport: string): Promise<FlightEntity[]> {
+    async findFlightsStartingAirport(startingAirport: Airports): Promise<FlightEntity[]> {
         if(!await this.flightRepository.findOne({where: {startingAirport: startingAirport}})){
             this.logger.error(`Flight with starting airport ${startingAirport} not found`)
             throw new FlightSearchDepartureException(startingAirport)
@@ -142,7 +146,7 @@ export class FlightService{
     }
 
 
-    async findFlightsDestinationAirport(destinationAirport: string): Promise<FlightEntity[]> {
+    async findFlightsDestinationAirport(destinationAirport: Airports): Promise<FlightEntity[]> {
         if(!await this.flightRepository.findOne({where: {destinationAirport: destinationAirport}})){
             this.logger.error(`Flight with destination airport ${destinationAirport} not found`)
             throw new FlightSearchDestinationException(destinationAirport)
@@ -152,13 +156,13 @@ export class FlightService{
     }
 
 
-    async findFlightsDepartingDate(departingDate: string): Promise<FlightEntity[]> {
-        if(!await this.flightRepository.findOne({where: {departingDate: departingDate}})){
+    async findFlightsDepartingDate(departingDate: Date): Promise<FlightEntity[]> {
+        if(!await this.flightRepository.findOne({where: {departureTime: departingDate}})){
             this.logger.error(`Flight with departing date ${departingDate} not found`)
-            throw new FlightSearchDepartingDateException(departingDate)
+            throw new FlightSearchDepartingDateException(departingDate.toDateString())
         }
         this.logger.log(`Finding flights with departing date ${departingDate}`);
-        return this.flightRepository.find({where: {departingDate: departingDate}})
+        return this.flightRepository.find({where: {departureTime: departingDate}})
     }
 
     async findAllFlights(): Promise<FlightEntity[]> {
@@ -178,15 +182,16 @@ export class FlightService{
         }
     }
 
-    flightTotoEntity(flightDTO: any): FlightEntity {
+    flightTotoEntity(flightDTO: CreateFlightDto): FlightEntity {
         const flight = new FlightEntity();
-        flight.flightNumber = flightDTO.flightNumber;
-        flight.departingDate = flightDTO.departingDate;
-        flight.arrivalDate = flightDTO.arrivalDate;
+        flight.departureTime = flightDTO.departureTime;
+        flight.arrivalTime = flightDTO.arrivalTime;
         flight.startingAirport = flightDTO.startingAirport;
         flight.destinationAirport = flightDTO.destinationAirport;
         flight.segmentAirlineName = flightDTO.segmentAirlineName;
         flight.segmentEquipmentDescription = flightDTO.segmentEquipmentDescription;
+        flight.numberOfSeats = (<NumberOfSeats>Object.keys(AircraftTypes).indexOf(flightDTO.segmentEquipmentDescription))
+        flight.status = FlightStatus.Scheduled;
         return flight;
     }
 }

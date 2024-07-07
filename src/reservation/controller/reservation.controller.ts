@@ -1,5 +1,5 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ReservationService } from '../service/reservation.service';
 import { JwtOauthGuard } from '../../auth/guards/jwt-oauth.guard';
 import { CreateReservationDto } from './dto/create-reservation.dto';
@@ -17,6 +17,12 @@ export class ReservationController{
     @UseGuards(JwtOauthGuard)
     async createReservation(@Body() Reservation: CreateReservationDto) {
         return this.reservationService.createReservation(Reservation);
+    }
+
+    @Patch('payReservation/:id')
+    @UseGuards(JwtOauthGuard)
+    async payReservation(@Param("id") id: string){
+        return this.reservationService.payReservation(id);
     }
 
     @Post('update')

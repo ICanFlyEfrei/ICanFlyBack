@@ -8,7 +8,7 @@ export class ReservationEntity{
     @PrimaryGeneratedColumn('uuid')
     id:string;
 
-    @OneToMany(() => FlightEntity, flight => flight.id)
+    @OneToMany(() => FlightEntity, flight => flight.flightNumber)
     flight: FlightEntity
 
     @OneToMany(() => UserEntity, user => user.id)

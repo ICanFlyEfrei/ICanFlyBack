@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FlightService } from '../service/flight.service';
 import { FlightEntity } from '../repository/entity/flight.entity';
 import { RoleGuard } from '../../auth/guards/role.guard';
-import { UserTypes, FlightStatus } from '../../shared/api-enums';
+import { UserTypes, FlightStatus, Airports, AirlineCodes } from '../../shared/api-enums';
 import { JwtOauthGuard } from '../../auth/guards/jwt-oauth.guard';
 import { CreateFlightDto } from './dto/create-flight.dto';
 import { SearchFlightDTO } from './dto/search-flight-dto';
@@ -20,9 +20,9 @@ export class FlightController{
         return this.flightService.createFlight(flight);
     }
 
-    @Post('update')
+    @Patch('update')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.admin))
-    async updade(@Body() flight : FlightEntity){
+    async update(@Body() flight: FlightEntity){
         return this.flightService.update(flight);
     }
 
@@ -32,13 +32,13 @@ export class FlightController{
         return this.flightService.delete(id);
     }
 
-    @Get('findFlight:id')
+    @Get('findflight.flightNumber')
     async findOne(@Param('id') id: string){
         return this.flightService.findOne(id);
     }
 
     @Get('findCompanyFlights/:segmentAirlineName')
-    async findCompanyFlights(@Param('segmentAirlineName') segmentAirlineName: string){
+    async findCompanyFlights(@Param('segmentAirlineName') segmentAirlineName: AirlineCodes){
         return this.flightService.findCompanyFlights(segmentAirlineName);
     }
 
@@ -48,17 +48,17 @@ export class FlightController{
     }
 
     @Get('findFlightsStartingAirport/:startingAirport')
-    async findFlightsStartingAirport(@Param('startingAirport') startingAirport: string){
+    async findFlightsStartingAirport(@Param('startingAirport') startingAirport: Airports){
         return this.flightService.findFlightsStartingAirport(startingAirport);
     }
 
     @Get('findFlightsDestinationAirport/:destinationAirport')
-    async findFlightsDestinationAirport(@Param('destinationAirport') destinationAirport: string){
+    async findFlightsDestinationAirport(@Param('destinationAirport') destinationAirport: Airports){
         return this.flightService.findFlightsDestinationAirport(destinationAirport);
     }
 
     @Get('findFlightsDepartingDate/:departingDate')
-    async findFlightsDepartingDate(@Param('departingDate') departingDate: string){
+    async findFlightsDepartingDate(@Param('departingDate') departingDate: Date){
         return this.flightService.findFlightsDepartingDate(departingDate);
     }
 

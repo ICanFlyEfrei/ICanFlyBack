@@ -1,27 +1,20 @@
 import { IsString, IsDate} from 'class-validator';
 import { Type } from 'class-transformer';
+import { AircraftTypes, AirlineCodes, Airports } from '../../../shared/api-enums';
 
 export class CreateFlightDto {
-    @IsString()
-    flightNumber: string;
 
     @IsString()
-    weekday: string;
+    startingAirport: Airports;
 
     @IsString()
-    numberOfSeats: string;
+    destinationAirport: Airports;
 
     @IsString()
-    startingAirport: string;
+    segmentAirlineName: AirlineCodes;
 
     @IsString()
-    destinationAirport: string;
-
-    @IsString()
-    segmentAirlineName: string;
-
-    @IsString()
-    segmentEquipmentDescription: string;
+    segmentEquipmentDescription: AircraftTypes;
 
     @IsDate()
     @Type(() => Date)

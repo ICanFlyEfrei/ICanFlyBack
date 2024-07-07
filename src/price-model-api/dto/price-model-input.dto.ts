@@ -1,4 +1,5 @@
 import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { AircraftTypes, AirlineCodes, Airports } from '../../shared/api-enums';
 
 export class PriceModelInputDto {
   @IsInt()
@@ -7,17 +8,17 @@ export class PriceModelInputDto {
 
   @IsString()
   @IsNotEmpty()
-  startingAirport: string;
+  startingAirport: Airports;
 
   @IsString()
   @IsNotEmpty()
-  destinationAirport: string;
+  destinationAirport: Airports;
 
   @IsString()
   @IsNotEmpty()
-  segmentsAirlineName: string;
+  segmentsAirlineName: AirlineCodes;
 
   @IsString()
   @IsNotEmpty()
-  segmentsEquipmentDescription: string;
+  segmentsEquipmentDescription: AircraftTypes;
 }

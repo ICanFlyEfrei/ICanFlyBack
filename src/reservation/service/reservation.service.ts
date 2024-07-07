@@ -25,10 +25,10 @@ export class ReservationService {
     private readonly logger = new Logger(ReservationService.name);
 
     async createReservation(createReservationDto: CreateReservationDto) {
-        const flight = await this.flightService.findOne(createReservationDto.flight.id);
+        const flight = await this.flightService.findOne(createReservationDto.flight.flightNumber);
         if (flight.numberOfSeats < 1) {
-            this.logger.error(`No seats available on flight with id ${flight.id}`);
-            throw new ReservationException(`No seats available on flight with id ${flight.id}`, 'NoSeatsAvailableException');
+            this.logger.error(`No seats available on flight with id ${flight.flightNumber}`);
+            throw new ReservationException(`No seats available on flight with id ${flight.flightNumber}`, 'NoSeatsAvailableException');
         }
 
         flight.numberOfSeats -= 1;
@@ -37,6 +37,33 @@ export class ReservationService {
         const Reservation = await this.reservationRepository.save(this.ReservationTotoEntity(createReservationDto));
         this.logger.log(`Creating Reservation with id ${Reservation.id}`);
         return Reservation.id;
+    }
+
+    async payReservation(id: string) {
+        const reservation = await this.reservationRepository.findOne({where: {id}});
+        if (!reservation) {
+            this.logger.error(`Reservation with id ${id} not found`);
+            throw new ReservationException(`Reservation with id ${id} not found`, 'ReservationNotFoundException');
+        }
+        if (reservation.payment) {
+            this.logger.error(`Reservation with id ${id} already paid`);
+            throw new ReservationException(`Reservation with id ${id} already paid`, 'ReservationAlreadyPaidException');
+        }
+
+        const flight = await this.flightService.findOne(reservation.flight.flightNumber);
+        if (flight.numberOfSeats < 1) {
+            this.logger.error(`No seats available on flight with id ${flight.flightNumber}`);
+            throw new ReservationException(`No seats available on flight with id ${flight.flightNumber}`, 'NoSeatsAvailableException');
+        }
+
+        flight.numberOfSeats -= 1;
+        await this.flightService.update(flight);
+
+        reservation.payment = true;
+        await this.reservationRepository.save(reservation);
+
+        this.logger.log(`Reservation with id ${id} paid and confirmed`);
+        return {id: reservation.id, message: 'Reservation paid and confirmed'};
     }
 
     async update(Reservation: ReservationEntity): Promise<ReservationEntity> {
