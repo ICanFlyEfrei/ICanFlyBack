@@ -3,8 +3,8 @@ import { FlightEntity } from '../repository/entity/flight.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AircraftTypes, AirlineCodes, Airports, FlightStatus, NumberOfSeats } from '../../shared/api-enums';
-import { CreateFlightDto } from '../controller/dto/create-flight.dto';
-import { SearchFlightDTO } from '../controller/dto/search-flight-dto';
+import { CreateFlightInputDto } from '../controller/dto/create-flight-input.dto';
+import { SearchFlightInputDTO } from '../controller/dto/search-flight-input.dto';
 
 @Injectable()
 export class FlightService{
@@ -15,7 +15,7 @@ export class FlightService{
 
     private readonly logger = new Logger(FlightService.name);
 
-    async createFlight(createFlightDto: CreateFlightDto) {
+    async createFlight(createFlightDto: CreateFlightInputDto) {
         const flight = await this.flightRepository.save(this.flightTotoEntity(createFlightDto));
         this.logger.log(`Creating flight with id ${flight.flightNumber}`);
         return {
@@ -111,7 +111,7 @@ export class FlightService{
         return this.flightRepository.find();
     }
 
-    async findFlightWithParams(params: SearchFlightDTO ): Promise<FlightEntity[]> {
+    async findFlightWithParams(params: SearchFlightInputDTO ): Promise<FlightEntity[]> {
         try {
             return await this.flightRepository.find({where: params});
         } catch (e) {
@@ -120,7 +120,7 @@ export class FlightService{
         }
     }
 
-    flightTotoEntity(flightDTO: CreateFlightDto): FlightEntity {
+    flightTotoEntity(flightDTO: CreateFlightInputDto): FlightEntity {
         const flight = new FlightEntity();
         flight.departureTime = flightDTO.departureTime;
         flight.arrivalTime = flightDTO.arrivalTime;

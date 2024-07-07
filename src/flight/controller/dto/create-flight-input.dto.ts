@@ -2,7 +2,7 @@ import { IsString, IsDate} from 'class-validator';
 import { Type } from 'class-transformer';
 import { AircraftTypes, AirlineCodes, Airports } from '../../../shared/api-enums';
 
-export class CreateFlightDto {
+export class CreateFlightInputDto {
 
     @IsString()
     startingAirport: Airports;

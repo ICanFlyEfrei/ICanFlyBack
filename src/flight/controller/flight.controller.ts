@@ -5,8 +5,8 @@ import { FlightEntity } from '../repository/entity/flight.entity';
 import { RoleGuard } from '../../auth/guards/role.guard';
 import { UserTypes, FlightStatus, Airports, AirlineCodes } from '../../shared/api-enums';
 import { JwtOauthGuard } from '../../auth/guards/jwt-oauth.guard';
-import { CreateFlightDto } from './dto/create-flight.dto';
-import { SearchFlightDTO } from './dto/search-flight-dto';
+import { CreateFlightInputDto } from './dto/create-flight-input.dto';
+import { SearchFlightInputDTO } from './dto/search-flight-input.dto';
 
 @ApiTags('flight')
 @Controller('flight')
@@ -16,7 +16,7 @@ export class FlightController{
 
     @Post('createFlight')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
-    async createFlight(@Body() flight: CreateFlightDto) {
+    async createFlight(@Body() flight: CreateFlightInputDto) {
         return this.flightService.createFlight(flight);
     }
 
@@ -42,22 +42,22 @@ export class FlightController{
         return this.flightService.findCompanyFlights(segmentAirlineName);
     }
 
-    @Get('findFlightsStatus/:status')
+    @Get('findFlightsByStatus/:status')
     async findFlightsStatus(@Param('status') status: FlightStatus){
         return this.flightService.findFlightsStatus(status);
     }
 
-    @Get('findFlightsStartingAirport/:startingAirport')
+    @Get('findFlightsByStartingAirport/:startingAirport')
     async findFlightsStartingAirport(@Param('startingAirport') startingAirport: Airports){
         return this.flightService.findFlightsStartingAirport(startingAirport);
     }
 
-    @Get('findFlightsDestinationAirport/:destinationAirport')
+    @Get('findFlightsByDestinationAirport/:destinationAirport')
     async findFlightsDestinationAirport(@Param('destinationAirport') destinationAirport: Airports){
         return this.flightService.findFlightsDestinationAirport(destinationAirport);
     }
 
-    @Get('findFlightsDepartingDate/:departingDate')
+    @Get('findFlightsByDepartingDate/:departingDate')
     async findFlightsDepartingDate(@Param('departingDate') departingDate: Date){
         return this.flightService.findFlightsDepartingDate(departingDate);
     }
@@ -68,9 +68,9 @@ export class FlightController{
         return this.flightService.findAllFlights();
     }
 
-    @Get()
-    async findFlightWithParams(@Query() flight: SearchFlightDTO){
-        return this.flightService.findFlightWithParams(flight);
+    @Get('find')
+    async findFlightWithParams(@Query() flightInput: SearchFlightInputDTO){
+        return this.flightService.findFlightWithParams(flightInput);
     }
 
 }

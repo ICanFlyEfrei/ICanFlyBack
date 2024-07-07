@@ -25,7 +25,7 @@ export class ReservationController{
         return this.reservationService.payReservation(id);
     }
 
-    @Post('update')
+    @Patch('update')
     @UseGuards(JwtOauthGuard, RoleGuard(UserTypes.employee))
     async update(@Body() Reservation : ReservationEntity){
         return this.reservationService.update(Reservation);
