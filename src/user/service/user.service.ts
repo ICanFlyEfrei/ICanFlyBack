@@ -38,7 +38,7 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<UserEntity> {
-    const entity = await this.userRepository.findOne({where: {email},select: ['id', 'email', 'firstName', 'lastName', 'phoneNumber', 'company', 'type']});
+    const entity = await this.userRepository.findOne({where: {email},select: ['id', 'email', 'password', 'firstName', 'lastName', 'phoneNumber', 'company', 'type']});
     if (!entity) {
       this.logger.error(`User with email: ${email} not found`);
       throw new UserNotFoundException(email);
