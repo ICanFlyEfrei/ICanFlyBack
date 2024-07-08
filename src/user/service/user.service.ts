@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { UserTypes } from '../../shared/api-enums';
 import { CreateEmployeeDto } from '../controller/dto/create-employee.dto';
 import { CreateClientDto } from '../controller/dto/create-client.dto';
+import { UserDto } from '../controller/dto/user-dto';
 
 class UserNotFoundException implements Error {
   constructor(id: string) {
@@ -28,13 +29,13 @@ export class UserService {
 
   private readonly logger = new Logger(UserService.name);
 
-  async findOne(id: string): Promise<UserEntity> {
+  async findOne(id: string): Promise<UserDto> {
     const entity= await this.userRepository.findOne({where:{id}, select: ['id', 'email', 'firstName', 'lastName', 'phoneNumber', 'company', 'type']});
     if (!entity) {
       this.logger.error(`User with id: ${id} not found`);
       throw new UserNotFoundException(id);
     }
-    return entity;
+    return this.userEntityToDto(entity);
   }
 
   async findByEmail(email: string): Promise<UserEntity> {
@@ -99,7 +100,7 @@ export class UserService {
     return this.userRepository.find({where: {type: UserTypes.client}, select: ['id', 'email', 'firstName', 'lastName', 'phoneNumber', 'company', 'type']});
   }
 
-  clientDtoToEntity(client: CreateClientDto): UserEntity {
+  private clientDtoToEntity(client: CreateClientDto): UserEntity {
     const user = new UserEntity();
     user.email = client.email;
     user.password = client.password;
@@ -121,5 +122,17 @@ export class UserService {
     user.company = employee.company;
     user.type = UserTypes.employee;
     return user;
+  }
+
+  private userEntityToDto(user: UserEntity): UserDto {
+    const userDto = new UserDto();
+    userDto.id = user.id;
+    userDto.email = user.email;
+    userDto.firstName = user.firstName;
+    userDto.lastName = user.lastName;
+    userDto.phoneNumber = user.phoneNumber;
+    userDto.company = user.company;
+    userDto.type = user.type;
+    return userDto;
   }
 }
