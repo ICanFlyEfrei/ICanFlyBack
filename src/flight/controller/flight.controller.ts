@@ -68,7 +68,7 @@ export class FlightController{
         return this.flightService.findAllFlights();
     }
 
-    @Get('find')
+    @Get('')
     async findFlightWithParams(@Query() flightInput: SearchFlightInputDTO){
         return this.flightService.findFlightWithParams(flightInput);
     }
