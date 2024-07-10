@@ -130,6 +130,7 @@ export class FlightService{
         flight.segmentEquipmentDescription = flightDTO.segmentEquipmentDescription;
         flight.numberOfSeats = (<NumberOfSeats>Object.keys(AircraftTypes).indexOf(flightDTO.segmentEquipmentDescription))
         flight.status = FlightStatus.Scheduled;
+        flight.price = flightDTO.price;
         return flight;
     }
 }
