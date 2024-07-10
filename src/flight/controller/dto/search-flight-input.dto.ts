@@ -12,5 +12,5 @@ export class SearchFlightInputDTO {
 
   @IsString()
   @IsNotEmpty()
-  departureDate: Date;
+  departureTime: Date;
 }
