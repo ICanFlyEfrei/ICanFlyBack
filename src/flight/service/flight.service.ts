@@ -113,14 +113,19 @@ export class FlightService{
 
     async findFlightWithParams(params: SearchFlightInputDTO ): Promise<FlightEntity[]> {
         try {
-            return await this.flightRepository.find({where: params});
+            const flights = await this.flightRepository.find({where: { startingAirport: params.startingAirport, destinationAirport: params.destinationAirport}});
+            return flights.filter(flight => (
+              (flight.departureTime.getDate() === params.departureTime.getDate())
+              && (flight.departureTime.getMonth() === params.departureTime.getMonth())
+              && (flight.departureTime.getFullYear() === params.departureTime.getFullYear())
+            ));
         } catch (e) {
             this.logger.error(`Error finding flight with params ${JSON.stringify(params)}`);
             throw e;
         }
     }
 
-    flightTotoEntity(flightDTO: CreateFlightInputDto): FlightEntity {
+    private flightTotoEntity(flightDTO: CreateFlightInputDto): FlightEntity {
         const flight = new FlightEntity();
         flight.departureTime = flightDTO.departureTime;
         flight.arrivalTime = flightDTO.arrivalTime;
